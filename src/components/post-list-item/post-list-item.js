@@ -1,7 +1,6 @@
 import React from 'react';
 
 const postListItem = ({ label, onDeletePost, onToggleFavourite, onToggleLike, favourite, like }) => {
-
     let liClassNames = 'app-list-item d-flex justify-content-between';
     if (favourite) {
         liClassNames += ' favourite';

@@ -43,26 +43,15 @@ export default class App extends Component {
         }));
     }
 
-    // toggleFavourite = (id) => {
-    //     this.setState(({ posts }) => ({
-    //         posts: posts.map((post) => {
-    //             if (post.id === id) {
-    //                 post.favourite = !post.favourite
-    //             }
-    //             return post;
-    //         })
-    //     }));
-    // }
-
-    toggleFavourite(id) {
-        this.setState(({ posts }) => {
-            const index = posts.findIndex((item) => item.id === id);
-            const oldItem = posts[index];
-            const newItem = { ...oldItem, favourite: !oldItem.favourite };
-            return {
-                posts: [...posts.slice(0, index), newItem, ...posts.slice(index + 1)]
-            }
-        });
+    toggleFavourite = (id) => {
+        this.setState(({ posts }) => ({
+            posts: posts.map((post) => {
+                if (post.id === id) {
+                    post.favourite = !post.favourite;
+                }
+                return post;
+            })
+        }));
     }
 
     toogleLike = (id) => {
@@ -70,21 +59,20 @@ export default class App extends Component {
             return {
                 posts: posts.map((post) => {
                     if (post.id === id) {
-                        post.like = !post.like
+                        post.like = !post.like;
                     }
                     return post;
                 })
 
             }
         });
-        console.log(this.state.posts);
     }
 
 
     render() {
         const { posts } = this.state
 
-        const likedPosts = posts.filter(post => post.liked).length;
+        const likedPosts = posts.filter(post => post.like).length;
         const postsQuantity = posts.length;
         return (
             <div className="app">
