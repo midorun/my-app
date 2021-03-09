@@ -21,13 +21,13 @@ export default class App extends Component {
         posts: [
             { id: nextId(), label: 'Going to learn React', favourite: true, like: true },
             { id: nextId(), label: 'That is so good', favourite: false, like: false },
-            { id: nextId(), label: 'Wanna fuck :(', favourite: false, like: false },
+            { id: nextId(), label: 'How to change state... :(', favourite: false, like: false },
         ]
     }
 
     deletePost = (id) => {
         this.setState(({ posts }) => ({
-            posts: posts.filter((post, i, posts) => posts[i].id !== id)
+            posts: posts.filter((post) => post.id !== id)
         }));
     }
 
@@ -38,30 +38,41 @@ export default class App extends Component {
             favourite: false
         }
 
-        this.setState(({ posts }) => ({ posts: [...posts, newPost] }));
+        this.setState(({ posts }) => ({
+            posts: [...posts, newPost]
+        }));
     }
 
-    toggleFavourite = (id) => {
+    // toggleFavourite = (id) => {
+    //     this.setState(({ posts }) => ({
+    //         posts: posts.map((post) => {
+    //             if (post.id === id) {
+    //                 post.favourite = !post.favourite
+    //             }
+    //             return post;
+    //         })
+    //     }));
+    // }
+
+    toggleFavourite(id) {
         this.setState(({ posts }) => {
+            const index = posts.findIndex((item) => item.id === id);
+            const oldItem = posts[index];
+            const newItem = { ...oldItem, favourite: !oldItem.favourite };
             return {
-                posts: posts.map((item) => {
-                    if (item.id === id) {
-                        item.favourite = !item.favourite
-                    }
-                    return item;
-                })
+                posts: [...posts.slice(0, index), newItem, ...posts.slice(index + 1)]
             }
-        })
+        });
     }
 
     toogleLike = (id) => {
         this.setState(({ posts }) => {
             return {
-                posts: posts.map((item) => {
-                    if (item.id === id) {
-                        item.like = !item.like
+                posts: posts.map((post) => {
+                    if (post.id === id) {
+                        post.like = !post.like
                     }
-                    return item;
+                    return post;
                 })
 
             }
