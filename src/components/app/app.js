@@ -22,7 +22,9 @@ export default class App extends Component {
             { id: nextId(), label: 'Going to learn React', favourite: true, like: true },
             { id: nextId(), label: 'That is so good', favourite: false, like: false },
             { id: nextId(), label: 'How to change state... :(', favourite: false, like: false },
-        ]
+        ],
+        searchValue: '',
+        postFilterStatus: 'all'
     }
 
     deletePost = (id) => {
@@ -31,10 +33,10 @@ export default class App extends Component {
         }));
     }
 
-    addPost = (body) => {
+    addPost = (value) => {
         const newPost = {
             id: nextId(),
-            label: body,
+            label: value,
             favourite: false
         }
 
@@ -45,53 +47,72 @@ export default class App extends Component {
 
     toggleFavourite = (id) => {
         this.setState(({ posts }) => ({
-            posts: posts.map((post) => {
-                if (post.id === id) {
-                    post.favourite = !post.favourite;
-                }
-                return post;
-            })
+            posts: posts.map(
+                post => post.id === id ? { ...post, favourite: !post.favourite } : post
+            )
         }));
     }
 
     toogleLike = (id) => {
-        this.setState(({ posts }) => {
-            return {
-                posts: posts.map((post) => {
-                    if (post.id === id) {
-                        post.like = !post.like;
-                    }
-                    return post;
-                })
-
-            }
-        });
+        this.setState(({ posts }) => ({
+            posts: posts.map(post => post.id === id ? { ...post, like: !post.like } : post)
+        }));
     }
 
+    searchPost = (posts, searchValue) => {
+        if (!searchValue.length) {
+            return posts;
+        }
+        return posts.filter(post => post.label.indexOf(searchValue) > -1)
+    }
+
+    updateSearchResult = (searchValue) => {
+        this.setState({ searchValue });
+    }
+
+    filterPosts = (posts, postFilterStatus) => {
+        if (postFilterStatus === 'like') {
+            return posts.filter(post => post.like);
+        } else {
+            return posts;
+        }
+    }
+
+    changePostFilterStatus = (postFilterStatus) => {
+        this.setState({ postFilterStatus })
+    }
 
     render() {
-        const { posts } = this.state
+        const { posts, searchValue, postFilterStatus } = this.state;
 
-        const likedPosts = posts.filter(post => post.like).length;
+        const likedPostsQuantity = posts.filter(post => post.like).length;
         const postsQuantity = posts.length;
+
+        const properPosts = this.filterPosts(this.searchPost(posts, searchValue), postFilterStatus);
+
         return (
             <div className="app">
                 <AppHeader
-                    likedPosts={likedPosts}
+                    likedPosts={likedPostsQuantity}
                     postsQuantity={postsQuantity}
                 />
                 <div className="search-panel d-flex">
-                    <SearchPanel />
-                    <PostStatusFilter />
+                    <SearchPanel
+                        onUpdateSearchResult={this.updateSearchResult}
+                    />
+                    <PostStatusFilter
+                        status={postFilterStatus}
+                        onChangePostFilterStatus={this.changePostFilterStatus}
+                    />
                 </div>
                 <PostList
-                    posts={this.state.posts}
+                    posts={properPosts}
                     onDeletePost={this.deletePost}
                     onToggleFavourite={this.toggleFavourite}
                     onToggleLike={this.toogleLike}
                 />
                 <PostAddForm
-                    addPost={this.addPost}
+                    onAddPost={this.addPost}
                 />
             </div>
         )
